@@ -3,10 +3,10 @@ services:
   elasticsearch:
     image: elasticsearch:2.4.2
     ports:
-     - "9300:9300"
-     - "9200:9200"
+      - "9300:9300"
+      - "9200:9200"
     environment:
-     - "discovery.type=single-node"
+      - "discovery.type=single-node"
   cmdelasticsearch:
     image: elasticsearch:5
     ports:
@@ -18,27 +18,27 @@ services:
   highcharts:
     image: onsdigital/highcharts-export-node
     ports:
-     - "9999:8080"
+      - "9999:8080"
   postgres:
     build: ./postgres
-    environment: 
-     - POSTGRES_USER=postgres
-     - POSTGRES_PASSWORD=mysecretpassword
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=mysecretpassword
     ports:
-     - "5432:5432"
+      - "5432:5432"
   mongodb:
     image: mongo
     ports:
       - 27017:27017
-  neo4j:
-    image: neo4j:3.2.12
-    ports:
-      - 7474:7474
-      - 7687:7687
-    environment:
-      - "NEO4J_AUTH=none"
-      - "NEO4J_dbms_memory_pagecache_size=5G"
-      - "NEO4J_dbms_memory_heap_max__size=5G"
+#  neo4j:
+#    image: neo4j:3.2.12
+#    ports:
+#      - 7474:7474
+#      - 7687:7687
+#    environment:
+#      - "NEO4J_AUTH=none"
+#      - "NEO4J_dbms_memory_pagecache_size=5G"
+#      - "NEO4J_dbms_memory_heap_max__size=5G"
   zookeeper:
     image: wurstmeister/zookeeper
     ports:
@@ -65,3 +65,27 @@ services:
     cap_add:
       - IPC_LOCK
 
+  dp-sessions-api:
+    image: dp-sessions-api
+    build:
+      context: repos/dp-sessions-api
+      dockerfile: Dockerfile.jj
+    environment:
+      ZEBEDEE_URL: "http://localhost:8082"
+      SERVICE_AUTH_TOKEN: ""
+    ports:
+      - 24400:24400
+#    depends_on:
+#      - zebedee
+
+#  zebedee:
+#    image: zebedee
+#    build:
+#      context: repos/zebedee
+#      dockerfile: Dockerfile.jj
+#    environment:
+##    ports:
+#    volumes:
+#      - type: bind
+#        source: ./zebedee-content
+#        target: /zebedee-content
