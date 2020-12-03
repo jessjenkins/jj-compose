@@ -1,0 +1,5 @@
+FROM node:6.10.0
+WORKDIR /sixteens
+COPY . /sixteens
+RUN npm install
+CMD npm run dev

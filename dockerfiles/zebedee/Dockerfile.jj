@@ -4,10 +4,13 @@
 FROM maven:3-jdk-8 AS build
 WORKDIR /home/app
 COPY pom.xml .
-#COPY zebedee-cms/pom.xml zebedee-cms/
-#COPY zebedee-reader/pom.xml zebedee-reader/
-#RUN mvn dependency:go-offline
-#RUN mvn clean
+
+#Experimental stuff for improving build caching…
+RUN mkdir zebedee-cms zebedee-reader
+COPY zebedee-cms/pom.xml zebedee-cms/
+COPY zebedee-reader/pom.xml zebedee-reader/
+RUN mvn dependency:go-offline || true
+
 COPY zebedee-cms zebedee-cms
 COPY zebedee-reader zebedee-reader
 #RUN ls -la
@@ -20,10 +23,10 @@ RUN mvn -Dmaven.test.skip -Dossindex.skip=true clean package dependency:copy-dep
 #
 # Package stage
 #
-FROM openjdk:8
+FROM openjdk:8-jre
 COPY --from=build /home/app/zebedee-cms/target/classes /target/classes
 COPY --from=build /home/app/zebedee-cms/target/dependency /target/dependency
-RUN find target -type d
+#RUN find target -type d
 CMD java -Xmx2048m -cp "target/dependency/*:target/classes/"    \
     -Drestolino.packageprefix=com.github.onsdigital.zebedee.api \
     -Drestolino.classes=target/classes                          \

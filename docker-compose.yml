@@ -66,7 +66,7 @@ services:
       - IPC_LOCK
   redis:
     image: redis:6
-    command: redis-server --requirepass mooquack
+    command: redis-server --requirepass default
 
   dp-sessions-api:
     image: dp-sessions-api
@@ -74,24 +74,62 @@ services:
       context: repos/dp-sessions-api
       dockerfile: Dockerfile.jj
     environment:
-      ZEBEDEE_URL: "http://localhost:8082"
-      SERVICE_AUTH_TOKEN: ""
+      ZEBEDEE_URL: "http://zebedee:8082"
+      SERVICE_AUTH_TOKEN: "88da21b9580a01c29fccd98c22b12612d696f0ca39409c92c0d7da6dacf8be1d"
       ELASTICACHE_ADDR: "redis:6379"
-      ELASTICACHE_PASSWORD: "mooquack"
+      ELASTICACHE_PASSWORD: "default"
     ports:
       - 24400:24400
     depends_on:
       - redis
-#      - zebedee
+      - zebedee
 
-#  zebedee:
-#    image: zebedee
-#    build:
-#      context: repos/zebedee
-#      dockerfile: Dockerfile.jj
-#    environment:
-##    ports:
-#    volumes:
-#      - type: bind
-#        source: ./zebedee-content
-#        target: /zebedee-content
+  zebedee:
+    image: zebedee
+    build:
+      context: repos/zebedee
+      dockerfile: Dockerfile.jj
+    environment:
+     zebedee_root: "/zebedee-content"
+     audit_db_enabled: "false"
+     PORT: 8082
+    ports:
+      - 8082:8082
+    volumes:
+      - type: bind
+        source: ./zebedee-content
+        target: /zebedee-content
+
+
+  dp-frontend-router:
+    image: dp-frontend-router
+    build:
+      context: repos/dp-frontend-router
+      dockerfile: Dockerfile.jj
+    environment:
+      BABBAGE_URL: "http://babbage:8080"
+      API_ROUTER_URL: "http://dp-api-router:23200"
+    ports:
+      - 20000:20000
+    depends_on:
+      - dp-api-router
+
+  dp-api-router:
+    image: dp-api-router
+    build:
+      context: repos/dp-api-router
+      dockerfile: Dockerfile.jj
+    environment:
+      ZEBEDEE_URL: "http://zebedee:8082"
+    ports:
+      - 23200:23200
+    depends_on:
+      - zebedee
+
+  sixteens:
+    image: sixteens
+    build:
+      context: repos/sixteens
+      dockerfile: Dockerfile.jj
+    ports:
+      - 9000:9000
