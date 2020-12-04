@@ -4,7 +4,7 @@ COPY src /src
 RUN npm install --unsafe-perm
 RUN cd legacy ; npm install --unsafe-perm
 
-FROM golang:1.15.3 as build-go
+FROM golang:1.15 as build-go
 WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download -json
