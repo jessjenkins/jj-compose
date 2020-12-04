@@ -147,3 +147,11 @@ services:
       API_ROUTER_URL: "http://dp-api-router:23200"
     depends_on:
       - dp-api-router
+
+  dp-frontend-renderer:
+    image: dp-frontend-renderer
+    build:
+      context: repos/dp-frontend-renderer
+      dockerfile: Dockerfile.jj
+    ports:
+      - 20010:20010

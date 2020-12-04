@@ -4,6 +4,7 @@ gh="git@github.com:ONSdigital"
 
 services="The-Train
 dp-api-router
+dp-frontend-renderer
 dp-frontend-router
 dp-sessions-api
 florence
