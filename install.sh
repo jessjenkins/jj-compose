@@ -6,6 +6,7 @@ services="The-Train
 dp-api-router
 dp-frontend-router
 dp-sessions-api
+florence
 sixteens
 zebedee"
 
