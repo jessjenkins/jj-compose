@@ -153,5 +153,25 @@ services:
     build:
       context: repos/dp-frontend-renderer
       dockerfile: Dockerfile.jj
+#    environment:
+#      BABBAGE_URL: "http://babbage:8080"
+#      API_ROUTER_URL: "http://dp-api-router:23200"
     ports:
       - 20010:20010
+#    depends_on:
+#      - dp-api-router
+
+  babbage:
+    image: babbage
+    build:
+      context: repos/babbage
+      dockerfile: Dockerfile.jj
+    environment:
+      CONTENT_SERVICE_URL: "http://dp-api-router:23200/v1"
+#      zebedee_root: "/zebedee-content"
+#      audit_db_enabled: "false"
+#      PORT: 8082
+#    ports:
+#      - 8082:8082
+    depends_on:
+      - dp-api-router

@@ -1,0 +1,37 @@
+#
+# Build stage
+#
+FROM node:8 as build-node
+WORKDIR /src/main/web
+COPY src/main/web .
+RUN find /src -type d
+RUN npm install --unsafe-perm
+
+
+FROM maven:3-jdk-8 AS build
+WORKDIR /home/app
+COPY pom.xml .
+#Experimental stuff for improving build caching…
+RUN mvn dependency:go-offline || true
+
+COPY . .
+#RUN ls -la
+#RUN find . -type f
+RUN mvn -Dmaven.test.skip -Dossindex.skip=true clean package dependency:copy-dependencies
+#RUN ls -la
+#RUN find . -type f
+
+#
+#
+# Package stage
+#
+FROM openjdk:8-jre
+COPY --from=build /home/app/target/classes /target/classes
+COPY --from=build /home/app/target/dependency /target/dependency
+COPY --from=build-node /src/main/web /target/web
+#RUN find target -type d
+CMD java -Xmx2048m -cp "target/dependency/*:target/classes/"    \
+    -Drestolino.files=target/web \
+    -Drestolino.packageprefix=com.github.onsdigital.babbage.api \
+    -Drestolino.classes=target/classes                          \
+    com.github.davidcarboni.restolino.Main
